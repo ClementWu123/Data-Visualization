@@ -1,0 +1,82 @@
+---
+title: "Air passengers 1949-1960"
+output: pdf_document
+geometry: margin=.75in
+graphics: yes
+header-includes:
+- \usepackage{graphicx}
+- \usepackage{color}
+fontsize: 9pt
+classoption: letter
+
+---
+
+**22 marks**
+
+**Airline passengers**.   
+Here we will examine the monthly total of the number of air passengers in the US from 1949 to 1960.
+
+The data are available as the data set `AirPassengers` from the `datasets` package in the standard `R` distribution.
+
+```{r setup data}
+AirPassengers
+```
+
+a. **(7 marks)** Use the function `decompose()` on this data and plot the results.  
+
+    i. *(2 marks)* Show your plot.
+    
+    ```{r}
+    plot(decompose(AirPassengers))
+    ```
+    
+    ii. *(1 mark)* Describe the trend.
+    
+        **There is an rising trend with the time increases.**
+    
+    iii. *(2 marks)* Describe the seasonal pattern.
+    
+    
+         **The seasonal is in a repeating cycle across years. Graphs are indentical every
+        year.**
+    
+    iv. *(2 marks)* What do you conclude from the residuals?
+        
+        **We don't see a clear pattern in residuals. However, the plot between 1954 and 1958 is different from other years.**
+    
+
+b.  **(9 marks)** Use the function `stl()` on this data with seasonality loess span `s.window = 7` and the local polynomial for the seasonal loess being a line.
+
+    i. *(2 marks)* Show your plot.
+    
+    ```{r}
+    plot(stl(AirPassengers, s.window=7, s.degree=1))
+    ```
+    
+    
+    ii. *(2 marks)* Describe the trend.  Is it significant? Why or why not?
+    
+        **It's still an rising trend. However, it is significant because the variation is really large as the size of the range rectangle is smaller than the remainder's.**
+    
+    iii. *(3 marks)* Describe the seasonal pattern.  Is it significant? Why or why not?
+    
+         **Seasonal variation gets larger and larger but still in certain cycles. It is significant because comparing to remainder, it also has small size of range rectangle.**
+        
+    iv. *(2 marks)* What do you conclude from the residuals?
+        
+        **We can't see a clear pattern in residuals. There are variations across years.**
+
+c. **(6 marks)** Compare the plots from parts (a) and (b).
+
+    i. *(2 marks)* What are the major differences in the plots?
+       
+       **Seasonal variation in (b) increases across years comparing to constant variation in (a).**
+       
+    ii. *(2 marks)* What characteristics of the two methods caused these differences?
+    
+        **It is because for (a), we are using simple average for months in all years. In (b), we are smoothing the value in a 7-year window and use the smooth values as estimate.** 
+
+    iii. *(2 marks)*  Which fitted model do you prefer and **why**?
+    
+         **I prefer the second one because we are able to find a descriptive pattern in seasonal. Residuals in the second model is random, which is a desired result.**
+        

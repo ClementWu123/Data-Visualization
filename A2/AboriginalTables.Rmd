@@ -1,0 +1,182 @@
+---
+title: "Aboriginal tables"
+output:
+  pdf_document: default
+  html_document: default
+header-includes:
+- \usepackage{color}
+- \usepackage{graphicx}
+- \usepackage{epic}
+- \usepackage{hyperref}
+- \PassOptionsToPackage{pdfmark}{hyperref}\RequirePackage{hyperref}
+- \newcommand{\ve}[1]{\mathbf{#1}}
+- \newcommand{\pop}[1]{\mathcal{#1}}
+- \newcommand{\samp}[1]{\mathcal{#1}}
+- \newcommand{\subspace}[1]{\mathcal{#1}}
+- \newcommand{\sv}[1]{\boldsymbol{#1}}
+- \newcommand{\sm}[1]{\boldsymbol{#1}}
+- \newcommand{\tr}[1]{{#1}^{\mkern-1.5mu\mathsf{T}}}
+- \newcommand{\abs}[1]{\left\lvert ~{#1} ~\right\rvert}
+- \newcommand{\size}[1]{\left\lvert {#1} \right\rvert}
+- \newcommand{\norm}[1]{\left|\left|{#1}\right|\right|}
+- \newcommand{\field}[1]{\mathbb{#1}}
+- \newcommand{\Reals}{\field{R}}
+- \newcommand{\Integers}{\field{Z}}
+- \newcommand{\Naturals}{\field{N}}
+- \newcommand{\Complex}{\field{C}}
+- \newcommand{\Rationals}{\field{Q}}
+- \newcommand{\widebar}[1]{\overline{#1}}
+- \newcommand{\wig}[1]{\tilde{#1}}
+- \newcommand{\bigwig}[1]{\widetilde{#1}}
+- \newcommand{\leftgiven}{~\left\lvert~}
+- \newcommand{\given}{~\vert~}
+- \newcommand{\indep}{\bot\hspace{-.6em}\bot}
+- \newcommand{\notindep}{\bot\hspace{-.6em}\bot\hspace{-0.75em}/\hspace{.4em}}
+- \newcommand{\depend}{\Join}
+- \newcommand{\notdepend}{\Join\hspace{-0.9 em}/\hspace{.4em}}
+- \newcommand{\imply}{\Longrightarrow}
+- \newcommand{\notimply}{\Longrightarrow \hspace{-1.5em}/ \hspace{0.8em}}
+- \newcommand*{\intersect}{\cap}
+- \newcommand*{\union}{\cup}
+- \newcommand{\suchthat}{~:~}
+- \newcommand{\st}{~:~}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**14 marks**
+
+Tables are an important way to display symbolic numbers.   In the document `Tables.pdf` (and perhaps more importantly its source file `Tables.Rmd`) you will find some examples of manipulating tables using the `knitr` `R` package.   Please consult those files (downloading them and opening them from RStudio) and familiarize yourself with the material found there.  It will be very helpful to you in undertaking the analysis in this questions.
+
+Here you are going to work on some Statistics Canada data to produce an interesting table.  The data are on aboriginal populations taken from a  Statistics Canada website [http://www.statcan.gc.ca/tables-tableaux/sum-som/l01/cst01/demo60a-eng.htm](http://www.statcan.gc.ca/tables-tableaux/sum-som/l01/cst01/demo60a-eng.htm); 
+see [https://www12.statcan.gc.ca/nhs-enm/2011/as-sa/99-011-x/99-011-x2011001-eng.cfm](https://www12.statcan.gc.ca/nhs-enm/2011/as-sa/99-011-x/99-011-x2011001-eng.cfm) for archived information on aboriginal peoples in Canada.
+
+This data is available in a "Comma Separated Values" or ``csv'' file named "aboriginal.csv".  This should appear in the same location as this file of questions.  Download both the ".Rmd" file of questions and the"csv" file of data and place them in the same directory on your machine.  
+    
+In `RStudio` check what the current working directory is using the `getwd()` command in `R`.  For example in my case the current working directory is 
+
+```{r directory, tidy = TRUE, eval = FALSE}
+getwd()
+```
+    
+```{r path, tidy=TRUE}
+path_concat <- function(path1, pathOrFilename2, dirsep = "/") {
+ ## Both path1 and pathOrFilename2 are expected to be strings. 
+ ## path1 is the directory path preceding pathOrFilename2 
+ ## and does NOT end with a directory separator like / or \ or :
+ ## 
+ ## Note that the directory separator may be different for you. 
+ ## The default one here is for UNIX or MAC OS,  
+ ## whereas "\"  is used for windows
+ paste(path1, pathOrFilename2, sep = dirsep)
+}
+    
+# With this you could set up a directory string 
+# identifying where you store your data for this course.
+# 
+# My data directory is
+DataPath <- "/Users/clementwu/Downloads"
+# This is a unix style pathname (with \ escaping the blank following it).
+# 
+# In Windows, your data directory path would begin with the drive and
+# use the windows directory separator "\" e.g.  "C:\path\Data" 
+# 
+# To be general in what follows, we also use a generic 
+# directory separator
+dirsep <- "/"
+# Change yours as necessary.
+```
+    
+Now that the directory is identified, we can read the csv file into a data frame and show the results.
+    
+```{r}
+filename <- path_concat(DataPath, "aboriginal.csv", dirsep = dirsep)
+data <- read.table(filename,  header = TRUE, sep = ",", row.names = "ID")
+# You need to load the "knitr" library to access the "kable" function
+library(knitr)
+
+# The first few columns look like
+kable(data[, 1:4])
+```
+    
+a. *(10 marks)* Reformat this table to make whatever patterns it contains more easily apprehended.  Show each step that you choose to follow by displaying the table that results from each step.  Say why you chose to make that step by referencing the rules we had for reformatting tables. Write down a summary of whatever patterns you have uncovered. 
+
+**Step 1**: swap rows and columns to place least variation in columns.
+
+```{r}
+t1 <- t(data)
+kable(t1)
+```
+
+**Step 2**: change numbers to two decimals to reduce number complexity
+
+```{r}
+kable(t1, digits=2)
+```
+
+**Step3**: change heading to simple labels and add percentage sign. This can make headings more clear to the readers.
+
+```{r}
+colnames(t1) <- c('Aboriginal (%)', 'North American Indian (%)', 'Metis (%)', 'Inuit (%)', 'Non aboriginal (%)')
+kable(t1, digits=2)
+```
+
+**Step4**: change the alignments in columns to reduce the space between values.
+
+```{r}
+kable(t1, digits=2, align='c')
+```
+
+**Step5**: delete the 'CA' row as it is national statistics but others are provincial.
+
+```{r}
+t2 <- t1[-1,]
+kable(t2, digits=2, align='c')
+```
+
+**Step6**: Reorder rows and columns to have rows summaries decrease from top to bottom and column summaries increase from left and right.
+
+```{r}
+colorder <- order(colMeans(t2))
+roworder <- order(rowMeans(t2), decreasing = TRUE)
+t3 <- t2[, colorder][roworder,]
+kable(t3, digits=2, align='c')
+```
+
+**Summary**: From the table, we can see that most of the provinces have huge groups of non-aboriginal, especially for southern part of Canada, The percentages of Non-aboriginal are over 90%. We can see a gradual increase in the percentage of aboriginal From South to North. The percentages of Metis are pretty low across Canada. North American Indian has a dominant percentage in NT and YT, while most of the people living in MU are Inuit.  
+
+b. *(4 marks)* Note that the category `Aboriginal.identity.population` includes the "Aboriginal groups (North American Indian, Métis and Inuit), multiple Aboriginal responses and Aboriginal responses not included elsewhere".  Replace the data on `Aboriginal.identity.population` by `Other.aboriginal` that is the difference between `Aboriginal.identity.population` and the North American Indian, Métis and Inuit groups.  Again, give the table the best presentation and summarize whatever pattern exists. 
+
+```{r}
+other <- t3[,4]-t3[,3]-t3[,2]-t3[,1]
+t4 <- cbind(t3, other)
+```
+
+**Step1**: change 'other' column name and add percentage sign to match the format of other columns
+
+```{r}
+colnames(t4)[6] <- 'Other Aboriginal (%)'
+kable(t4, digits=2, align='c')
+```
+
+**Step2**: remove redundant column 'Aboriginal'
+
+```{r}
+t5 <- t4[,-4]
+kable(t5, digits=2, align='c')
+```
+
+**Step3**: order columns and rows by their means
+
+```{r}
+colorder <- order(colMeans(t5))
+roworder <- order(rowMeans(t5), decreasing = TRUE)
+t6 <- t5[, colorder][roworder,]
+kable(t6, digits=2, align='c')
+```
+
+**Summary**: From the new graph we can see that, NL has the highest percentage of other aboriginal people, while PQ has the least. Northern part of Canada have high percent of other aboriginal, except for NU, which has only 0.17. 
+
+
